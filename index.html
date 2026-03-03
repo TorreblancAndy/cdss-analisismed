@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Torreblanca | CDSS V5.0 Internal Medicine</title>
+    <title>Dr. Torreblanca | CDSS V5.1 Modular</title>
     <style>
         :root { --primary: #00251a; --accent: #004d40; --bg: #eceff1; --card: #ffffff; --warn: #ff8f00; --crit: #c62828; --success: #2e7d32; --drug: #4a148c; --cardio: #b71c1c; }
         body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); padding: 0; margin: 0; color: #37474f; font-size: 14px; line-height: 1.4; }
@@ -36,6 +36,9 @@
         .interpretation { margin-top: 10px; padding: 8px; background: #f5f5f5; border-left: 3px solid #ccc; font-size: 0.85rem; color: #455a64; }
         .interpretation.critical { background: #ffebee; border-left-color: var(--crit); color: #b71c1c; }
         .interpretation.alert { background: #fff8e1; border-left-color: var(--warn); color: #f57f17; }
+        
+        /* Status Bar para Base de Datos */
+        #dbStatus { font-size: 0.75rem; color: #78909c; text-align: right; margin-top: 5px; }
 
         /* Disclaimer Modal */
         #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; justify-content: center; align-items: center; }
@@ -49,7 +52,7 @@
         <div class="modal-content">
             <h2 style="margin-top:0; color:var(--crit)">⚠️ Validación Clínica R4</h2>
             <p class="legal-text">
-                Herramienta de soporte a la decisión clínica (CDSS) versión 5.0. 
+                Herramienta de soporte a la decisión clínica (CDSS) versión 5.1 Modular. 
                 Incluye algoritmos de <strong>Nefrofarmacología, Cardiología Avanzada y Hemodinámica</strong>.
             </p>
             <ul class="legal-text">
@@ -65,9 +68,9 @@
         <div class="header">
             <div>
                 <h1>CDSS Clinical Suite</h1>
-                <span style="font-size:0.9rem; color:#607d8b">Integración: Cardio - Nefro - Hemato - Farmaco</span>
+                <span style="font-size:0.9rem; color:#607d8b">Integración Modular: Cardio - Nefro - Hemato - Farmaco</span>
             </div>
-            <span class="badge">V5.0 R4</span>
+            <span class="badge">V5.1 MODULAR</span>
         </div>
 
         <div class="layout">
@@ -87,6 +90,7 @@ Examen Orina: uNa 40 uCr 120 uOsm 350.
 Perfil Tiroideo: TSH 8.5 T4L 0.6.
 Cardio: FEVI 35%. TA 100/60.
 Medicamentos: Metformina 850mg, Enoxaparina 60mg, Espironolactona."></textarea>
+                <div id="dbStatus">Cargando base de datos...</div>
                 <button class="analyze-btn" onclick="runAnalysis()">EJECUTAR ANÁLISIS INTEGRAL</button>
             </div>
 
@@ -97,21 +101,36 @@ Medicamentos: Metformina 850mg, Enoxaparina 60mg, Espironolactona."></textarea>
     </div>
 
 <script>
-    // --- BASE DE DATOS NEFROFARMACOLÓGICA (SIMPLIFICADA) ---
-    const DRUG_DB = {
-        'metformina': { cut: 30, msg: "Contraindicada (Riesgo Acidosis Láctica). Suspender." },
-        'glibenclamida': { cut: 60, msg: "Riesgo hipoglucemia severa. Evitar." },
-        'enoxaparina': { cut: 30, msg: "Ajustar dosis al 50% o cambiar a HNF." },
-        'rivaroxaban': { cut: 15, msg: "Contraindicado. (Ajuste 15mg si TFG 15-50)." },
-        'dabigatran': { cut: 30, msg: "Contraindicado." },
-        'espironolactona': { cut: 30, msg: "Contraindicada (Riesgo Hiperkalemia)." },
-        'nitrofurantoina': { cut: 60, msg: "Ineficaz y tóxica (Neuropatía)." },
-        'ains': { cut: 60, msg: "Nefrotóxico directo. Evitar.", pattern: /(?:diclofenaco|ketorolaco|ibuprofeno|naproxeno|indometacina)/i },
-        'ieca_ara': { cut: 0, msg: "Monitorizar K+ y Cr. Suspender si AKI con Cr >30% basal.", pattern: /(?:enala|capto|lisino|losartan|telmi|candesa|valsa)pril|rtan/i },
-        'sglt2': { cut: 20, msg: "Efecto glucosúrico reducido. Evaluar riesgo/beneficio CV.", pattern: /(?:dapa|empa|cana)gliflozina/i }
-    };
+    // --- 1. SISTEMA DE CARGA DE BASE DE DATOS (JSON FETCH) ---
+    let DRUG_DB = [];
 
-    // --- PATRONES REGEX ---
+    async function loadDatabase() {
+        try {
+            // Busca el archivo 'farmacos.json' en la misma carpeta/repositorio
+            const response = await fetch('farmacos.json');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            DRUG_DB = await response.json();
+            
+            // Notificar éxito en la interfaz
+            document.getElementById('dbStatus').innerHTML = `✅ Base de datos activa: ${DRUG_DB.length} fármacos indexados.`;
+            document.getElementById('dbStatus').style.color = 'var(--success)';
+            
+        } catch (error) {
+            console.error("Error cargando la base de datos de fármacos:", error);
+            document.getElementById('dbStatus').innerHTML = `⚠️ Error cargando 'farmacos.json'. La alertas farmacológicas no funcionarán.`;
+            document.getElementById('dbStatus').style.color = 'var(--crit)';
+        }
+    }
+
+    // Iniciar carga al abrir la página
+    loadDatabase();
+
+
+    // --- 2. PATRONES REGEX (CLÍNICOS) ---
     const PATTERNS = {
         // Básicos
         hb: /(?:Hb|Hemoglobina)\s*[:=]?\s*([\d\.]+)/i,
@@ -164,7 +183,7 @@ Medicamentos: Metformina 850mg, Enoxaparina 60mg, Espironolactona."></textarea>
 
         let gridHTML = "";
 
-        // --- 1. RENAL & NEFROFARMACOLOGÍA ---
+        // --- 1. RENAL & NEFROFARMACOLOGÍA (MODULAR) ---
         let tfg = null;
         if (d.crea) {
             // CKD-EPI 2021
@@ -176,14 +195,31 @@ Medicamentos: Metformina 850mg, Enoxaparina 60mg, Espironolactona."></textarea>
 
             let drugAlerts = [];
             
-            // Lógica de fármacos
-            for (const [drugName, data] of Object.entries(DRUG_DB)) {
-                let regex = data.pattern || new RegExp(drugName, "i");
-                if (regex.test(text)) {
-                    if (tfg < data.cut) {
-                        drugAlerts.push(`<b>${drugName.toUpperCase()}:</b> TFG < ${data.cut}. ${data.msg}`);
+            // --- NUEVA LÓGICA DE ITERACIÓN SOBRE JSON ---
+            if (DRUG_DB.length > 0) {
+                DRUG_DB.forEach(drug => {
+                    let isPresent = false;
+                    
+                    // Caso 1: Tiene un patrón Regex complejo (ej. IECA/ARA)
+                    if (drug.regex) {
+                        if (new RegExp(drug.regex, "i").test(text)) isPresent = true;
+                    } 
+                    // Caso 2: Buscar por lista de alias simples
+                    else if (drug.alias && drug.alias.length > 0) {
+                         // Busca palabra completa para evitar falsos positivos
+                        isPresent = drug.alias.some(alias => new RegExp("\\b" + alias + "\\b", "i").test(text));
                     }
-                }
+
+                    if (isPresent) {
+                        drug.ajuste_renal.forEach(rule => {
+                            if (tfg < rule.tfg_menor_a) {
+                                drugAlerts.push(`<b>${drug.nombre.toUpperCase()}:</b> TFG < ${rule.tfg_menor_a}. ${rule.accion}`);
+                            }
+                        });
+                    }
+                });
+            } else {
+                drugAlerts.push("⚠️ No se pudo verificar fármacos (Base de datos desconectada).");
             }
 
             let renalStatus = tfg < 60 ? "alert" : "normal";
