@@ -1,31 +1,77 @@
 [
   {
     "nombre": "Metformina",
-    "alias": ["metformina", "glucophage", "dimefor"],
+    "alias": ["metformina", "glucophage", "dimefor", "predial"],
     "ajuste_renal": [
-      { "tfg_menor_a": 30, "accion": "Contraindicado (Riesgo Acidosis Láctica)", "tipo": "critical" },
-      { "tfg_menor_a": 45, "accion": "Dosis máx 1000mg/día", "tipo": "alert" }
+      { "tfg_menor_a": 30, "accion": "Contraindicada (Riesgo Acidosis Láctica). Suspender.", "tipo": "critical" },
+      { "tfg_menor_a": 45, "accion": "Precaución: Dosis máxima 1000mg/día.", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "Glibenclamida",
+    "alias": ["glibenclamida", "euglucon"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 60, "accion": "Riesgo alto de hipoglucemia severa y prolongada. Evitar.", "tipo": "critical" }
     ]
   },
   {
     "nombre": "Enoxaparina",
     "alias": ["enoxaparina", "clexane"],
     "ajuste_renal": [
-      { "tfg_menor_a": 30, "accion": "Ajustar dosis al 50% (1mg/kg c/24h) o cambiar a HNF", "tipo": "alert" }
+      { "tfg_menor_a": 30, "accion": "Ajuste obligatorio: 1mg/kg cada 24h (50% dosis) o cambiar a HNF.", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "Rivaroxaban",
+    "alias": ["rivaroxaban", "xarelto"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 15, "accion": "Contraindicado.", "tipo": "critical" },
+      { "tfg_menor_a": 50, "accion": "Ajustar dosis a 15mg c/24h.", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "Dabigatrán",
+    "alias": ["dabigatran", "pradaxa"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 30, "accion": "Contraindicado en ERC avanzada.", "tipo": "critical" }
+    ]
+  },
+  {
+    "nombre": "Espironolactona",
+    "alias": ["espironolactona", "aldactone", "vivitar"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 30, "accion": "Contraindicada (Alto riesgo de Hiperkalemia letal).", "tipo": "critical" }
     ]
   },
   {
     "nombre": "Nitrofurantoína",
     "alias": ["nitrofurantoina", "macrodantina"],
     "ajuste_renal": [
-      { "tfg_menor_a": 60, "accion": "Ineficaz y riesgo de neuropatía. Evitar.", "tipo": "critical" }
+      { "tfg_menor_a": 60, "accion": "Ineficaz en parénquima renal y riesgo de neuropatía periférica.", "tipo": "critical" }
     ]
   },
   {
-    "nombre": "Digoxina",
-    "alias": ["digoxina", "lanoxin"],
+    "nombre": "AINEs (Grupo)",
+    "alias": ["diclofenaco", "ketorolaco", "ibuprofeno", "naproxeno", "indometacina", "celecoxib"],
     "ajuste_renal": [
-      { "tfg_menor_a": 50, "accion": "Reducir dosis 50% o monitorizar niveles séricos estrechamente", "tipo": "alert" }
+      { "tfg_menor_a": 60, "accion": "Nefrotóxico directo (Vasoconstricción aferente). Evitar uso crónico.", "tipo": "alert" },
+      { "tfg_menor_a": 30, "accion": "Evitar completamente.", "tipo": "critical" }
+    ]
+  },
+  {
+    "nombre": "IECA / ARA II",
+    "regex": "(?:enala|capto|lisino|losartan|telmi|candesa|valsa|irbesa)pril|rtan",
+    "alias": [],
+    "ajuste_renal": [
+      { "tfg_menor_a": 30, "accion": "Precaución: Suspender si hay AKI o si Creatinina sube >30% del basal. Monitorizar K+.", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "iSGLT2",
+    "regex": "(?:dapa|empa|cana)gliflozina",
+    "alias": ["jardiance", "forxiga", "invokana"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 20, "accion": "Inicio no recomendado con TFG <20. Valorar riesgo/beneficio si ya lo toma (Efecto CV vs Glucosúrico).", "tipo": "alert" }
     ]
   }
 ]
