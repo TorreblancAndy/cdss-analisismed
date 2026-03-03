@@ -44,19 +44,39 @@
         .interpretation.abnormal { background: #fff8e1; color: #e65100; border-left-color: var(--warn); }
         .interpretation.critical { background: #ffebee; color: #c62828; border-left-color: var(--crit); }
         
-        /* Modal Disclaimer */
-        #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; max-width: 500px; border-radius: 8px; text-align: center; }
+        /* Modal Disclaimer Legal Mexicano */
+        #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 35px; max-width: 600px; border-radius: 8px; text-align: left; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border-left: 10px solid var(--primary); }
+        .modal-h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .legal-list { font-size: 0.9rem; color: #37474f; line-height: 1.6; padding-left: 20px; }
+        .legal-list li { margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div id="disclaimerModal">
         <div class="modal-content">
-            <h2 style="color:var(--crit)">⚠️ Aviso de Responsabilidad</h2>
-            <p>CDSS para uso exclusivo de profesionales de la salud (Nivel R4+).</p>
-            <p style="font-size:0.9em">Los algoritmos incluyen análisis gasométrico avanzado y scores de sepsis (qSOFA/SOFA) que requieren correlación clínica inmediata.</p>
-            <button class="analyze-btn" onclick="document.getElementById('disclaimerModal').style.display='none'">Aceptar</button>
+            <h2 class="modal-h2">⚠️ Aviso Legal, Privacidad y Uso Profesional</h2>
+            
+            <p style="font-weight:bold; color:#d32f2f;">
+                HERRAMIENTA DISEÑADA EXCLUSIVAMENTE PARA MÉDICOS INTERNISTAS, RESIDENTES DE MEDICINA INTERNA Y ÁREAS CRÍTICAS.
+            </p>
+
+            <p style="font-size:0.9rem;">
+                Este software es un Sistema de Soporte a la Decisión Clínica (CDSS) auxiliar. Al utilizarlo, usted reconoce y acepta las siguientes condiciones conforme a la normativa mexicana vigente:
+            </p>
+
+            <ul class="legal-list">
+                <li><strong>Protección de Datos (LFPDPPP):</strong> Esta aplicación opera bajo el principio de <em>Disociación de Datos</em>. No solicita, procesa ni almacena identificadores personales (Nombre, CURP, Fecha de Nacimiento). El análisis se realiza sobre variables biológicas anónimas.</li>
+                
+                <li><strong>Arquitectura "Client-Side" (Seguridad):</strong> El procesamiento de datos ocurre exclusivamente en la memoria temporal (RAM) de su dispositivo local. <strong>Ningún dato es transmitido a servidores externos ni almacenado en bases de datos.</strong> Al cerrar esta ventana, la información se elimina permanentemente.</li>
+                
+                <li><strong>Responsabilidad Médica (NOM-004-SSA3-2012):</strong> Esta herramienta NO sustituye el juicio clínico ni constituye parte del Expediente Clínico Oficial. Los resultados gasométricos y scores (qSOFA, APACHE, R Factor) son sugerencias estadísticas que requieren correlación clínica obligatoria por parte del médico tratante.</li>
+            </ul>
+
+            <button class="analyze-btn" onclick="document.getElementById('disclaimerModal').style.display='none'">
+                ENTIENDO Y ACEPTO BAJO MI RESPONSABILIDAD PROFESIONAL
+            </button>
         </div>
     </div>
 
@@ -67,7 +87,7 @@
                 <div class="subtitle">Análisis Fisiopatológico: Hemodinámico, Gasométrico y Metabólico</div>
             </div>
             <div style="text-align:right; font-size:0.8rem; color:#888;">
-                v4.0 | R4 Internal Medicine
+                v4.1 | Internal Medicine R4 Edition
             </div>
         </div>
 
@@ -84,9 +104,9 @@
                         Edad: <input type="number" id="age" value="60" style="width:40px">
                     </div>
                 </div>
-                <textarea id="noteInput" placeholder="PEGAR NOTA O DATOS AQUÍ.
+                <textarea id="noteInput" placeholder="PEGAR NOTA CLÍNICA O LABORATORIOS (Formato libre).
 
-Ejemplo UCI:
+Ejemplo UCI / Urgencias:
 pH 7.28 pCO2 30 pO2 65 HCO3 14 Lac 4.5.
 Na 135 K 5.2 Cl 105 Ca 8.2 Alb 3.0.
 TA 90/50 FR 24 Sat 88% Glasgow 13.
@@ -97,7 +117,10 @@ AST 150 ALT 180 FA 100."></textarea>
 
             <div class="results-grid" id="outputGrid">
                 <div class="card normal">
-                    <div style="padding:20px; text-align:center; color:#90a4ae">Esperando datos...</div>
+                    <div style="padding:20px; text-align:center; color:#90a4ae">
+                        <strong>Sistema en Espera</strong><br>
+                        Ingrese variables fisiológicas para iniciar cálculo.
+                    </div>
                 </div>
             </div>
         </div>
@@ -115,7 +138,7 @@ AST 150 ALT 180 FA 100."></textarea>
         ica: /(?:Ca\+|Cai|Calcio i[oó]nico)\s*[:=]?\s*([\d\.]+)/i,
         glu_gas: /(?:GluGas|Glucosa\s*Gas)\s*[:=]?\s*([\d\.]+)/i,
         
-        // Vitales (Para Scores)
+        // Vitales (Para Scores Sepsis/UCI)
         ta: /(?:TA|PA|Presi[oó]n)\s*[:=]?\s*(\d+)[\/](\d+)/i, // Captura Sist/Diast
         fr: /(?:FR|Frecuencia R)\s*[:=]?\s*([\d\.]+)/i,
         fc: /(?:FC|Frecuencia C)\s*[:=]?\s*([\d\.]+)/i,
@@ -136,7 +159,7 @@ AST 150 ALT 180 FA 100."></textarea>
         // Hepático (Para R Factor)
         ast: /(?:AST|TGO)\s*[:=]?\s*([\d\.]+)/i,
         alt: /(?:ALT|TGP)\s*[:=]?\s*([\d\.]+)/i,
-        alp: /(?:ALP|FA|Fosfatasa|Alc)\s*[:=]?\s*([\d\.]+)/i, // Fosfatasa Alcalina
+        alp: /(?:ALP|FA|Fosfatasa|Alc)\s*[:=]?\s*([\d\.]+)/i, 
         bili: /(?:BT|Bili|Bilirrubina)\s*[:=]?\s*([\d\.]+)/i
     };
 
@@ -144,7 +167,8 @@ AST 150 ALT 180 FA 100."></textarea>
         const text = document.getElementById('noteInput').value;
         const fio2Val = parseFloat(document.getElementById('fio2').value) || 21;
         const patm = parseFloat(document.getElementById('patm').value) || 760;
-        const fio2 = fio2Val / 100; // Decimal pattern
+        const fio2 = fio2Val / 100;
+        const age = parseFloat(document.getElementById('age').value) || 60;
         
         let d = {}; 
         let gridHTML = "";
@@ -187,7 +211,6 @@ AST 150 ALT 180 FA 100."></textarea>
                     if (d.na && d.cl) {
                         let ag = d.na - (d.cl + d.hco3);
                         gasNote.push(`<b>Anion Gap: ${ag.toFixed(1)}</b> (${ag > 12 ? 'Elevado: MUDPILES' : 'Normal'}).`);
-                        // Delta Gap si AG elevado
                         if(ag > 12) {
                             let delta = (ag - 12) + d.hco3;
                             if(delta > 30) gasNote.push(`Delta Gap > 30: Alc. Metabólica concomitante.`);
@@ -203,7 +226,7 @@ AST 150 ALT 180 FA 100."></textarea>
             }
             gasNote.push(`<b>${disorder}</b>`);
 
-            // Oxigenación (Kirby & AaDO2)
+            // Oxigenación
             if (d.po2) {
                 let pafi = d.po2 / fio2;
                 let pafiMsg = `PaO2/FiO2: <b>${pafi.toFixed(0)}</b>`;
@@ -213,12 +236,11 @@ AST 150 ALT 180 FA 100."></textarea>
                 }
                 gasNote.push(pafiMsg);
 
-                // AaDO2 (Gradiente Alvéolo-Arterial)
-                // PAO2 = (FiO2 * (Patm - 47)) - (PaCO2 / 0.8)
+                // AaDO2
                 if (d.pco2) {
                     let pao2_alveolar = (fio2 * (patm - 47)) - (d.pco2 / 0.8);
                     let aado2 = pao2_alveolar - d.po2;
-                    let expectedAa = (parseFloat(document.getElementById('age').value) / 4) + 4;
+                    let expectedAa = (age / 4) + 4;
                     
                     let gradMsg = `AaDO2: ${aado2.toFixed(1)} mmHg (Esp: ~${expectedAa.toFixed(0)})`;
                     if (aado2 > expectedAa + 10) gradMsg += " -> Alt. Intercambio (Shunt/V-Q).";
@@ -226,7 +248,7 @@ AST 150 ALT 180 FA 100."></textarea>
                 }
             }
 
-            // Perfusión (Lactato)
+            // Perfusión
             if (d.lact) {
                 let lacMsg = `Lactato: ${d.lact}`;
                 if (d.lact > 2) { gasStatus = "critical"; lacMsg += " (Hipoperfusión Tisular/Sepsis)"; }
@@ -243,8 +265,7 @@ AST 150 ALT 180 FA 100."></textarea>
         let scoreStatus = "normal";
         let hasScores = false;
 
-        // qSOFA (Quick SOFA)
-        // Criterios: FR >= 22, TAS <= 100, GCS < 15
+        // qSOFA
         if (d.fr || d.tas || d.gcs) {
             let qsofa = 0;
             let criteria = [];
@@ -263,11 +284,8 @@ AST 150 ALT 180 FA 100."></textarea>
             }
         }
 
-        // SOFA (Componente Laboratorial)
-        // Requiere: PaO2, Plaq, Bili, Crea (MAP y GCS manual)
+        // SOFA (Lab Partial)
         let sofaLab = 0;
-        let sofaDetails = [];
-        
         if (d.po2 && fio2) {
             let pafi = d.po2/fio2;
             if (pafi < 400) sofaLab += (pafi < 100 ? 4 : pafi < 200 ? 3 : pafi < 300 ? 2 : 1);
@@ -284,7 +302,7 @@ AST 150 ALT 180 FA 100."></textarea>
 
         if (sofaLab > 0) {
             hasScores = true;
-            scoreNote.push(`<b>SOFA (Lab/Resp): ${sofaLab} puntos</b> (Solo componentes detectados).<br>Evaluar Vasopresores y GCS para score total.`);
+            scoreNote.push(`<b>SOFA (Lab/Resp): ${sofaLab} puntos</b> (Componentes detectados).<br>Evaluar Vasopresores y GCS para score total.`);
         }
 
         if (hasScores) {
@@ -299,12 +317,11 @@ AST 150 ALT 180 FA 100."></textarea>
             let hepStatus = "normal";
             let rFactor = null;
 
-            // R Factor Calc: (ALT / ULN) / (ALP / ULN)
-            // Usando ULN estándar: ALT=40, ALP=120 (Ajustable mentalmente por el médico)
+            // R Factor Calc (ACG Guidelines)
             if (d.alt && d.alp) {
-                let altN = d.alt / 40; // Veces sobre límite superior
-                let alpN = d.alp / 120;
-                if (altN > 1 || alpN > 1) { // Solo si hay elevación
+                let altN = d.alt / 40; // Assuming ULN 40
+                let alpN = d.alp / 120; // Assuming ULN 120
+                if (altN > 1 || alpN > 1) {
                     rFactor = altN / alpN;
                     let pattern = "";
                     if (rFactor > 5) pattern = "Hepatocelular";
@@ -316,7 +333,6 @@ AST 150 ALT 180 FA 100."></textarea>
                 }
             }
 
-            // De Ritis si no hay FA
             if (!rFactor && d.ast && d.alt) {
                 let ratio = d.ast / d.alt;
                 if (d.ast > 40 || d.alt > 40) {
@@ -324,8 +340,6 @@ AST 150 ALT 180 FA 100."></textarea>
                     hepNote.push(`Relación AST/ALT: ${ratio.toFixed(1)} (${ratio > 2 ? 'Sugestivo OH' : 'Sugestivo Viral/NAFLD'}).`);
                 }
             }
-
-            if (d.bili) hepNote.push(`Bilirrubina Total: ${d.bili}`);
             
             if (hepNote.length > 0) {
                 gridHTML += createCard("Perfil Hepático Avanzado", hepStatus, 
@@ -334,12 +348,15 @@ AST 150 ALT 180 FA 100."></textarea>
             }
         }
 
-        // --- 4. RENAL & ELETROLITOS (Módulos previos simplificados) ---
-        // (Reutilizando lógica básica de V3 para no extender demasiado el código, centrándonos en lo crítico)
+        // --- 4. RENAL & ELETROLITOS ---
         if (d.crea) {
-             // CKD EPI Simple
-             let tfg = 142 * Math.pow((d.crea/0.9), -1.2) * 0.9938**60; // Simplificado para demo
-             if(d.crea > 1.2) gridHTML += createCard("Renal", "abnormal", `Cr: ${d.crea}`, `Posible LRA/ERC. (Cálculo completo disponible en V3).`);
+             let tfg = 142 * Math.pow((d.crea/0.9), -1.2) * 0.9938**age; // Simplificado para demo
+             if(d.crea > 1.2) gridHTML += createCard("Renal", "abnormal", `Cr: ${d.crea}`, `Posible LRA/ERC. (Verificar diuresis).`);
+        }
+        
+        // --- 5. HEMATOLOGÍA ---
+        if (d.hb) {
+            if(d.hb < 10) gridHTML += createCard("Hematología", "abnormal", `Hb: ${d.hb}`, "Anemia moderada/severa. Evaluar transfusión según escenario clínico.");
         }
 
         document.getElementById('outputGrid').innerHTML = gridHTML || '<div class="card normal"><div style="padding:20px">Sin datos reconocibles.</div></div>';
