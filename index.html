@@ -2,69 +2,140 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dr. Torreblanca | Suite de Análisis Clínico Avanzado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Torreblanca | CDSS Medicina Interna</title>
     <style>
-        :root { --primary: #1a237e; --accent: #00b0ff; --bg: #eceff1; --card: #ffffff; --warn: #ff6f00; --crit: #b71c1c; }
-        body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); padding: 20px; color: #263238; max-width: 1400px; margin: 0 auto; }
+        :root { --primary: #1a237e; --accent: #0288d1; --bg: #f5f7fa; --card: #ffffff; --warn: #ff9800; --crit: #d32f2f; --success: #388e3c; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); padding: 0; margin: 0; color: #37474f; line-height: 1.5; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); margin-bottom: 20px; }
-        h1 { color: var(--primary); font-size: 1.5rem; margin: 10px 0; }
-        .badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+        /* Layout Principal */
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); margin-bottom: 20px; padding-bottom: 10px; }
+        h1 { color: var(--primary); font-size: 1.5rem; margin: 0; }
+        .subtitle { font-size: 0.9rem; color: #607d8b; }
+        .badge { background: var(--primary); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
 
+        /* Grid System */
         .layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
         
-        /* Input Area */
-        .input-panel textarea { width: 100%; height: 400px; padding: 15px; border: 1px solid #cfd8dc; border-radius: 8px; font-family: monospace; font-size: 13px; resize: vertical; box-sizing: border-box; }
-        .controls { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        button.analyze-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        button.analyze-btn:hover { background: #303f9f; }
+        /* Panel de Entrada */
+        .input-panel { position: sticky; top: 20px; }
+        .controls { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .radio-group label { margin-right: 15px; cursor: pointer; font-weight: 500; }
+        textarea { width: 100%; height: 400px; padding: 15px; border: 1px solid #cfd8dc; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 13px; resize: vertical; box-sizing: border-box; transition: border 0.2s; }
+        textarea:focus { border-color: var(--accent); outline: none; }
+        button.analyze-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button.analyze-btn:hover { background: #303f9f; transform: translateY(-1px); }
 
-        /* Results Grid */
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 4px solid #cfd8dc; }
+        /* Panel de Resultados */
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; align-content: start; }
+        
+        /* Tarjetas de Resultados */
+        .card { background: var(--card); border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 5px solid #cfd8dc; animation: fadeIn 0.3s ease-in-out; }
         .card.abnormal { border-top-color: var(--warn); }
         .card.critical { border-top-color: var(--crit); }
+        .card.normal { border-top-color: var(--success); }
         
-        .card-title { font-weight: bold; font-size: 0.9rem; text-transform: uppercase; color: #546e7a; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem; border-bottom: 1px dashed #eee; padding-bottom: 2px; }
-        .value { font-weight: bold; }
-        .interpretation { font-size: 0.85rem; background: #fff3e0; padding: 8px; border-radius: 4px; margin-top: 10px; color: #e65100; border-left: 3px solid #ff9800; }
-        .interpretation.normal { background: #e8f5e9; color: #2e7d32; border-left-color: #43a047; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .card-title { font-weight: 700; font-size: 0.95rem; text-transform: uppercase; color: #546e7a; }
+        .card-status { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; background: #eceff1; color: #78909c; }
         
-        .calc-box { grid-column: 1 / -1; background: #e3f2fd; border: 1px solid #90caf9; color: #0d47a1; }
+        .data-row { display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px dashed #eceff1; padding: 4px 0; }
+        .data-label { color: #78909c; }
+        .data-val { font-weight: 600; color: #263238; }
+        
+        .interpretation { margin-top: 12px; font-size: 0.85rem; padding: 10px; border-radius: 4px; background: #f5f5f5; border-left: 3px solid #bdbdbd; }
+        .interpretation.abnormal { background: #fff3e0; color: #e65100; border-left-color: var(--warn); }
+        .interpretation.critical { background: #ffebee; color: #c62828; border-left-color: var(--crit); }
+        .interpretation.normal { background: #e8f5e9; color: #2e7d32; border-left-color: var(--success); }
+
+        /* Disclaimer Modal */
+        #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: white; padding: 40px; max-width: 600px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin: 20px; }
+        .modal-icon { font-size: 3rem; margin-bottom: 20px; }
+        .modal-btn { background: var(--primary); color: white; padding: 12px 30px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .modal-btn:hover { background: var(--accent); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>CDSS Medicina Interna | Análisis Multivariable</h1>
-        <span class="badge">v2.1 R4 Build</span>
+    <div id="disclaimerModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚕️</div>
+            <h2 style="color:var(--primary); margin-top:0;">Aviso de Responsabilidad Médica</h2>
+            <p style="text-align: justify; color: #455a64; line-height: 1.6;">
+                Esta herramienta es un <strong>Sistema de Soporte a la Decisión Clínica (CDSS)</strong> diseñado exclusivamente con fines educativos y de orientación rápida para profesionales de la salud.
+            </p>
+            <ul style="text-align: left; color: #455a64; font-size: 0.95rem; margin-bottom: 20px;">
+                <li>Los algoritmos se basan en guías KDIGO 2024, ADA 2025 y Consensos de Hematología vigentes.</li>
+                <li><strong>NO sustituye el juicio clínico.</strong> Correlacione siempre con la clínica del paciente.</li>
+                <li><strong>Privacidad Garantizada:</strong> Esta es una herramienta <em>Client-Side</em>. Los datos que ingresa se procesan en la memoria RAM de su dispositivo y <strong>NUNCA</strong> son enviados a servidores externos ni almacenados.</li>
+            </ul>
+            <button class="modal-btn" onclick="acceptDisclaimer()">ENTIENDO Y ACEPTO RESPONSABILIDAD</button>
+        </div>
     </div>
 
-    <div class="layout">
-        <div class="input-panel">
-            <div class="controls">
-                <label><strong>Sexo:</strong> <input type="radio" name="sex" value="m" checked> H <input type="radio" name="sex" value="f"> M</label>
-                <br>
-                <label><strong>Edad:</strong> <input type="number" id="age" value="55" style="width: 50px;"> años</label>
+    <div class="main-container">
+        <div class="header">
+            <div>
+                <h1>CDSS Medicina Interna</h1>
+                <span class="subtitle">Herramienta de Análisis Fisiopatológico Automatizado</span>
             </div>
-            <textarea id="noteInput" placeholder="Pegue la nota médica aquí... Ej:
-Hb 8.2, VCM 105, Plaq 450000.
-Glu 350, Na 128, K 5.8, Cl 98.
-Crea 2.4, Urea 120, BUN 56.
-Alb 2.8, Ca 8.1.
-AST 120, ALT 40."></textarea>
-            <button class="analyze-btn" onclick="runAnalysis()">EJECUTAR ANÁLISIS</button>
+            <span class="badge">v3.0 R4 EDITION</span>
         </div>
 
-        <div class="results-grid" id="outputGrid">
-            <div class="card"><p style="color:#78909c; text-align:center">Esperando datos clínicos...</p></div>
+        <div class="layout">
+            <div class="input-panel">
+                <div class="controls">
+                    <div style="margin-bottom: 10px; font-weight: bold; color: var(--primary);">Configuración del Paciente</div>
+                    <div class="radio-group">
+                        <label><input type="radio" name="sex" value="m" checked> Masculino</label>
+                        <label><input type="radio" name="sex" value="f"> Femenino</label>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label>Edad: <input type="number" id="age" value="65" style="width: 60px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;"> años</label>
+                    </div>
+                </div>
+                <textarea id="noteInput" placeholder="Copie y pegue su nota de evolución aquí...
+El sistema extraerá automáticamente:
+- Hematología (Hb, VCM, RDW...)
+- Química (Glu, Urea, Cr...)
+- Electrolitos (Na, K, Cl...)
+- Perfil Hepático (AST, ALT...)
+
+Ejemplo:
+Hb 9.5 VCM 72. Creatinina 1.8. Na 128. AST 120 ALT 45."></textarea>
+                <button class="analyze-btn" onclick="runAnalysis()">EJECUTAR ANÁLISIS CLÍNICO</button>
+                <p style="font-size: 0.75rem; color: #90a4ae; text-align: center; margin-top: 10px;">
+                    Procesamiento local seguro (Offline-ready)
+                </p>
+            </div>
+
+            <div class="results-grid" id="outputGrid">
+                <div class="card normal">
+                    <div style="text-align: center; padding: 40px; color: #90a4ae;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📋</div>
+                        Esperando datos clínicos...<br>
+                        Pegue una nota y presione "Ejecutar Análisis".
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
 <script>
-    // --- 1. LÓGICA DE EXTRACCIÓN (REGEX) ---
-    // Diccionario de patrones optimizado para variaciones en notas médicas
+    // --- GESTIÓN DEL MODAL ---
+    function acceptDisclaimer() {
+        document.getElementById('disclaimerModal').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('disclaimerModal').style.display = 'none';
+        }, 300);
+    }
+
+    // --- MOTORES DE EXTRACCIÓN Y LÓGICA ---
     const PATTERNS = {
         // Hematología
         hb: /(?:Hb|Hemoglobina)\s*[:=]?\s*([\d\.]+)/i,
@@ -73,16 +144,15 @@ AST 120, ALT 40."></textarea>
         vcm: /(?:VCM|Volumen)\s*[:=]?\s*([\d\.]+)/i,
         rdw: /(?:RDW|ADE)\s*[:=]?\s*([\d\.]+)/i,
         retis: /(?:Retis|Reticulocitos)\s*[:=]?\s*([\d\.]+)/i,
-        // Química
+        // Química & Metabolismo
         glu: /(?:Glu|Glucosa)\s*[:=]?\s*([\d\.]+)/i,
         hba1c: /(?:HbA1c|A1c)\s*[:=]?\s*([\d\.]+)/i,
         crea: /(?:Cr|Crea|Creatinina)\s*[:=]?\s*([\d\.]+)/i,
         urea: /(?:Urea)\s*[:=]?\s*([\d\.]+)/i,
         bun: /(?:BUN)\s*[:=]?\s*([\d\.]+)/i,
         au: /(?:AU|Ac\.?\s*Urico|Acido Urico)\s*[:=]?\s*([\d\.]+)/i,
-        // Lipidos
-        chol: /(?:Col|Colesterol)\s*[:=]?\s*([\d\.]+)/i,
         tg: /(?:TG|Trigli|Trigliceridos)\s*[:=]?\s*([\d\.]+)/i,
+        chol: /(?:Col|Colesterol)\s*[:=]?\s*([\d\.]+)/i,
         // Electrolitos
         na: /(?:Na|Sodio)\s*[:=]?\s*([\d\.]+)/i,
         k: /(?:K|Potasio)\s*[:=]?\s*([\d\.]+)/i,
@@ -90,7 +160,7 @@ AST 120, ALT 40."></textarea>
         mg: /(?:Mg|Magnesio)\s*[:=]?\s*([\d\.]+)/i,
         p: /(?:P|Phos|Fosforo)\s*[:=]?\s*([\d\.]+)/i,
         ca: /(?:Ca|Calcio)\s*[:=]?\s*([\d\.]+)/i,
-        osmo: /(?:Osm|Osmolaridad)\s*[:=]?\s*([\d\.]+)/i, // Si ya viene reportada
+        osmo: /(?:Osm|Osmolaridad)\s*[:=]?\s*([\d\.]+)/i,
         // PFH
         alb: /(?:Alb|Albumina)\s*[:=]?\s*([\d\.]+)/i,
         glob: /(?:Glob|Globulina)\s*[:=]?\s*([\d\.]+)/i,
@@ -108,21 +178,38 @@ AST 120, ALT 40."></textarea>
         
         let data = {};
         let gridHTML = "";
+        let hasData = false;
 
-        // Extracción
+        // Extracción RegEx
         for (const [key, regex] of Object.entries(PATTERNS)) {
             const match = text.match(regex);
-            data[key] = match ? parseFloat(match[1]) : null;
+            if (match) {
+                data[key] = parseFloat(match[1]);
+                hasData = true;
+            } else {
+                data[key] = null;
+            }
         }
 
-        // --- MÓDULOS DE ANÁLISIS ---
+        if (!hasData) {
+            document.getElementById('outputGrid').innerHTML = `
+            <div class="card abnormal">
+                <div style="padding: 20px; text-align: center; color: var(--crit);">
+                    <strong>No se detectaron datos válidos.</strong><br>
+                    Asegúrese de usar formatos comunes como "Hb 12", "Na 135", "Cr 1.2".
+                </div>
+            </div>`;
+            return;
+        }
 
-        // 1. HEMATOLOGÍA
-        if (data.hb) {
+        // --- MÓDULO 1: HEMATOLOGÍA ---
+        if (data.hb !== null) {
             let note = [];
             let status = "normal";
-            // Anemia
-            if ((isMale && data.hb < 13) || (!isMale && data.hb < 12)) {
+            let anemia = (isMale && data.hb < 13) || (!isMale && data.hb < 12);
+            let poly = (isMale && data.hb > 16.5) || (!isMale && data.hb > 16);
+
+            if (anemia) {
                 status = "abnormal";
                 let type = "Normocítica";
                 if (data.vcm) {
@@ -130,172 +217,197 @@ AST 120, ALT 40."></textarea>
                     else if (data.vcm > 100) type = "Macrocítica";
                 }
                 
-                note.push(`Anemia ${type}.`);
-                
-                // Lógica combinada RDW
-                if (data.rdw && data.rdw > 15) {
-                    if (type.includes("Micro")) note.push("RDW Elevado: Alta sospecha de Ferropenia.");
-                    if (type.includes("Macro")) note.push("Sospecha déficit B12/Folatos.");
-                } else if (data.rdw) {
-                    if (type.includes("Micro")) note.push("RDW Normal: Ddx Talasemia vs Enf. Crónica.");
+                // Lógica Diferencial Avanzada
+                let diff = [];
+                if (type === "Microcítica") {
+                    if (data.rdw && data.rdw > 14.5) diff.push("Ferropenia (Alta Probabilidad)");
+                    else if (data.rdw) diff.push("Talasemia o Enf. Crónica");
+                } else if (type === "Macrocítica") {
+                    if (data.rdw && data.rdw > 14.5) diff.push("Déficit B12/Folatos");
+                    else diff.push("Alcohol / Mielodisplasia / Hipotiroidismo");
+                } else { // Normo
+                    if (data.retis) {
+                         // IPR aproximado
+                        let htoIdeal = isMale ? 45 : 40;
+                        let htoReal = data.htto || (data.hb * 3);
+                        let ipr = (data.retis * (htoReal / htoIdeal)) / 2;
+                        diff.push(ipr > 2 ? "Regenerativa (Hemólisis/Sangrado)" : "Arregenerativa (Central)");
+                    } else {
+                        diff.push("Solicitar Reticulocitos para clasificar");
+                    }
                 }
-
-                // Índice regenerativo (si hay retis)
-                if (data.retis) {
-                    // Corrección simple de reticulocitos (IPR aproximado)
-                    let htoIdeal = isMale ? 45 : 40;
-                    let htoReal = data.htto || (data.hb * 3);
-                    let ipr = (data.retis * (htoReal / htoIdeal)) / 2; // Factor maduración aprox 2
-                    note.push(ipr > 2 ? "Regenerativa (Hemólisis/Sangrado)." : "Arregenerativa (Defecto medular).");
-                }
-            } else if (data.hb > 16.5) {
+                note.push(`Anemia ${type}. ${diff.join(". ")}`);
+            } else if (poly) {
                 status = "abnormal";
-                note.push("Posible Poliglobulia/Eritrocitosis.");
+                note.push("Posible Poliglobulia/Eritrocitosis. Descartar causa pulmonar vs clonal.");
+            } else {
+                note.push("Serie roja en rangos fisiológicos.");
             }
 
-            if (data.plaq && data.plaq < 150000) note.push("Trombocitopenia.");
-            
+            if (data.plaq) {
+                if (data.plaq < 150000) { note.push("Trombocitopenia."); status = "abnormal"; if(data.plaq < 50000) status = "critical"; }
+                if (data.plaq > 450000) { note.push("Trombocitosis reactiva o clonal."); status = "abnormal"; }
+            }
+
             gridHTML += createCard("Hematología", status, 
-                `Hb: ${data.hb} | VCM: ${data.vcm || '-'} | Plaq: ${data.plaq || '-'}`, 
-                note.join(" ") || "Serie roja conservada.");
+                `Hb: ${data.hb} | VCM: ${data.vcm||'-'} | RDW: ${data.rdw||'-'}`, 
+                note.join("<br>"));
         }
 
-        // 2. RENAL (CKD-EPI 2021)
-        if (data.crea) {
+        // --- MÓDULO 2: NEFROLOGÍA (CKD-EPI 2021) ---
+        if (data.crea !== null) {
+            // CKD-EPI 2021 Constants
             let k = isMale ? 0.9 : 0.7;
             let alpha = isMale ? -0.302 : -0.241;
             let f1 = data.crea / k;
-            let tfg = 142 * Math.pow(Math.min(f1, 1), alpha) * Math.pow(Math.max(f1, 1), -1.2) * Math.pow(0.9938, age);
+            let tfg = 142 * Math.pow(Math.min(f1, 1), alpha) * Math.pow(Math.max(f1, 1), -1.200) * Math.pow(0.9938, age);
             if (!isMale) tfg *= 1.012;
 
-            let renalNote = [`TFGe: ${tfg.toFixed(1)} mL/min.`];
+            let renalNote = [];
             let status = "normal";
+            let stage = "";
 
-            if (tfg < 60) {
-                status = "abnormal";
-                renalNote.push("ERC o AKI en curso. Ajustar nefrotóxicos.");
-            }
+            if (tfg >= 90) stage = "G1";
+            else if (tfg >= 60) stage = "G2";
+            else if (tfg >= 45) { stage = "G3a"; status = "abnormal"; }
+            else if (tfg >= 30) { stage = "G3b"; status = "abnormal"; }
+            else if (tfg >= 15) { stage = "G4"; status = "critical"; }
+            else { stage = "G5"; status = "critical"; }
 
-            // Relación BUN/Cr
-            if (data.bun) {
-                let ratio = data.bun / data.crea;
-                if (ratio > 20) renalNote.push("Relación BUN/Cr > 20: Sugiere patrón Prerrenal.");
-            } else if (data.urea) {
-                let bunCalc = data.urea / 2.14;
-                if ((bunCalc / data.crea) > 20) renalNote.push("Patrón Prerrenal (Calc. desde Urea).");
+            renalNote.push(`<b>Estadio KDIGO: ${stage}</b>`);
+            if (tfg < 60) renalNote.push("Evitar nefrotóxicos. Ajuste renal de fármacos requerido.");
+
+            // Relación BUN/Creatinina (Azoemia Prerrenal)
+            if (data.bun || data.urea) {
+                let bunVal = data.bun || (data.urea / 2.14);
+                let ratio = bunVal / data.crea;
+                if (ratio > 20) {
+                    renalNote.push(`Relación BUN/Cr: ${ratio.toFixed(0)} (>20). <b>Sugiere origen Prerrenal</b> (Deshidratación/ICC).`);
+                } else {
+                    renalNote.push(`Relación BUN/Cr: ${ratio.toFixed(0)}. Sugiere NTA o Renal Intrínseca.`);
+                }
             }
 
             gridHTML += createCard("Función Renal", status, 
-                `Cr: ${data.crea} | Urea: ${data.urea||'-'} | BUN: ${data.bun||'-'}`, 
-                renalNote.join(" "));
+                `Cr: ${data.crea} | TFGe: ${tfg.toFixed(1)} mL/min`, 
+                renalNote.join("<br>"));
         }
 
-        // 3. METABÓLICO & OSMOLARIDAD (Cálculo automático)
-        let metabNote = [];
-        let metabStatus = "normal";
-        
-        // Osmolaridad Calculada: 2Na + Glu/18 + BUN/2.8
-        if (data.na && data.glu && (data.bun || data.urea)) {
-            let bunVal = data.bun || (data.urea / 2.14);
-            let osm = (2 * data.na) + (data.glu / 18) + (bunVal / 2.8);
-            let gapMsg = "";
-            if (data.osmo) {
-                let gap = data.osmo - osm; // Osmolar gap
-                gapMsg = gap > 10 ? `GAP Osmolar elevado (${gap.toFixed(1)}): Ddx Alcoholes/Tóxicos.` : "";
-            }
-            gridHTML += `<div class="card calc-box">
-                <div class="card-title">Cálculos Integrales</div>
-                <div class="value">Osmolaridad Calculada: ${osm.toFixed(1)} mOsm/kg</div>
-                <div class="interpretation">${osm > 320 ? "Estado Hiperosmolar: Riesgo coma." : "Tonicidad: " + osm.toFixed(0)} ${gapMsg}</div>
-            </div>`;
-        }
-
-        if (data.hba1c) {
-             if(data.hba1c > 6.5) { metabNote.push("Control glucémico subóptimo."); metabStatus = "abnormal"; }
-        }
-        if (data.glu) {
-             if(data.glu > 250) { metabNote.push("Hiperglucemia significativa."); metabStatus = "abnormal"; }
-             if(data.glu < 70) { metabNote.push("Hipoglucemia."); metabStatus = "critical"; }
-        }
-
-        if (data.glu || data.hba1c || data.tg) {
-             gridHTML += createCard("Metabolismo", metabStatus, 
-                `Glu: ${data.glu||'-'} | A1c: ${data.hba1c||'-'} | TG: ${data.tg||'-'}`,
-                metabNote.join(" ") || "Parámetros metabólicos ingresados.");
-        }
-
-        // 4. ELECTROLITOS
+        // --- MÓDULO 3: ELECTROLITOS & MEDIO INTERNO ---
         let lytesNote = [];
         let lytesStatus = "normal";
+        let showLytes = false;
 
-        if (data.na) {
+        // Sodio y Osmolaridad
+        if (data.na !== null) {
+            showLytes = true;
             if (data.na < 135) {
                 lytesStatus = "abnormal";
-                let severity = data.na < 125 ? "SEVERA" : "Leve/Mod";
-                // Corrección Na por hiperglucemia
+                let severity = data.na < 125 ? "SEVERA" : "Leve";
+                let corrText = "";
+                
+                // Corrección por Hiperglucemia (Katz)
                 if (data.glu && data.glu > 100) {
                     let correctedNa = data.na + (0.016 * (data.glu - 100));
-                    lytesNote.push(`Hiponatremia ${severity}. Na Corregido (por glucosa): ${correctedNa.toFixed(1)}.`);
-                } else {
-                    lytesNote.push(`Hiponatremia ${severity}. Evaluar VEC y OsmU.`);
+                    corrText = `<br><b>Na Corregido (Glucosa): ${correctedNa.toFixed(1)}</b>`;
                 }
+                lytesNote.push(`Hiponatremia ${severity}. ${corrText}`);
             } else if (data.na > 145) {
-                lytesNote.push("Hipernatremia: Calcular déficit de agua libre.");
                 lytesStatus = "abnormal";
+                lytesNote.push("Hipernatremia. Calcular déficit de agua libre.");
             }
         }
-        
-        if (data.k) {
-            if (data.k > 5.5) { lytesNote.push("Hiperkalemia: EKG urgente."); lytesStatus = "critical"; }
-            if (data.k < 3.5) { lytesNote.push("Hipokalemia: Reponer K+ (Verificar Mg)."); lytesStatus = "abnormal"; }
+
+        // Potasio
+        if (data.k !== null) {
+            showLytes = true;
+            if (data.k > 5.5) { lytesStatus = "critical"; lytesNote.push("<b>Hiperkalemia.</b> Verificar EKG / Membrana."); }
+            else if (data.k < 3.5) { lytesStatus = "abnormal"; lytesNote.push("Hipokalemia. Reposición indicada (Ver Mg)."); }
         }
 
         // Calcio Corregido
-        let caDisplay = `Ca: ${data.ca||'-'} | P: ${data.p||'-'} | Mg: ${data.mg||'-'}`;
-        if (data.ca && data.alb) {
-            let corrCa = data.ca + 0.8 * (4 - data.alb);
+        if (data.ca !== null && data.alb !== null) {
+            showLytes = true;
             if (data.alb < 4) {
-                lytesNote.push(`Ca Corregido (por Hipoalb): <b>${corrCa.toFixed(2)}</b>.`);
-                if (corrCa < 8.5) lytesNote.push("Hipocalcemia verdadera.");
+                let corrCa = data.ca + 0.8 * (4 - data.alb);
+                lytesNote.push(`Ca medido: ${data.ca}. <b>Ca Corregido (Alb): ${corrCa.toFixed(2)}</b>.`);
+                if (corrCa < 8.5) lytesStatus = "abnormal";
             }
         }
 
-        if (data.na || data.k || data.ca) {
-            gridHTML += createCard("Electrolitos", lytesStatus, caDisplay, lytesNote.join(" <br> ") || "Balance electrolítico aceptable.");
+        // Osmolaridad
+        if (data.na && data.glu && (data.bun || data.urea)) {
+            showLytes = true;
+            let bunVal = data.bun || (data.urea / 2.14);
+            let osm = (2 * data.na) + (data.glu / 18) + (bunVal / 2.8);
+            let osmMsg = `Osmolaridad Calc: ${osm.toFixed(0)} mOsm/kg.`;
+            
+            if (osm > 320) { osmMsg += " <b>Estado Hiperosmolar.</b>"; lytesStatus = "critical"; }
+            
+            if (data.osmo) {
+                let gap = data.osmo - osm;
+                if (gap > 10) osmMsg += `<br>GAP Osmolar Elevado (${gap.toFixed(1)}): Alcoholes/Tóxicos.`;
+            }
+            lytesNote.push(osmMsg);
         }
 
-        // 5. FUNCIÓN HEPÁTICA
-        if (data.ast || data.alt) {
-            let hepNote = [];
-            let hepStatus = "normal";
-            
-            // Indice De Ritis
-            if (data.ast && data.alt) {
-                let ratio = data.ast / data.alt;
-                if (data.ast > 40 || data.alt > 40) {
-                    hepStatus = "abnormal";
-                    if (ratio > 2) hepNote.push("Relación AST/ALT > 2: Sugestivo de Hepatopatía Alcohólica.");
-                    else if (ratio < 1) hepNote.push("Relación AST/ALT < 1: Sugestivo de Hepatitis Viral o NAFLD.");
-                }
-            }
-            
-            if (data.alb && data.alb < 3.5) hepNote.push("Hipoalbuminemia: Reactante fase negativa o desnutrición/falla sintética.");
-            if (data.ggt && data.ggt > 50) hepNote.push("GGT Elevada: Colestasis o inducción alcohólica.");
+        if (showLytes) {
+            gridHTML += createCard("Electrolitos & Medio Interno", lytesStatus, 
+                `Na: ${data.na||'-'} | K: ${data.k||'-'} | Ca: ${data.ca||'-'}`, 
+                lytesNote.join("<br>") || "Balance electrolítico sin alteraciones mayores.");
+        }
 
-            gridHTML += createCard("Hepatobiliar", hepStatus, 
+        // --- MÓDULO 4: HEPÁTICO & METABÓLICO ---
+        let hepNote = [];
+        let hepStatus = "normal";
+        let showHep = false;
+
+        // De Ritis (AST/ALT)
+        if (data.ast && data.alt) {
+            showHep = true;
+            let ratio = data.ast / data.alt;
+            let elevated = data.ast > 40 || data.alt > 40;
+            
+            if (elevated) {
+                hepStatus = "abnormal";
+                if (ratio > 2) hepNote.push("Relación AST/ALT > 2: Sugestivo de Hepatopatía Alcohólica.");
+                else if (ratio < 1) hepNote.push("Relación AST/ALT < 1: Sugestivo de Viral / NAFLD.");
+                else hepNote.push("Elevación de transaminasas inespecífica.");
+            }
+        }
+
+        // Función Sintética y Colestasis
+        if (data.alb && data.alb < 3.5) { showHep = true; hepNote.push("Hipoalbuminemia (Falla sintética o Desnutrición)."); }
+        if (data.ggt && data.ggt > 50) { showHep = true; hepNote.push("GGT elevada (Colestasis / Alcohol)."); }
+        
+        // Glucosa y Lípidos
+        if (data.glu > 200 || (data.hba1c && data.hba1c > 6.5)) {
+            showHep = true;
+            hepNote.push("Descontrol glucémico.");
+            if(hepStatus === "normal") hepStatus = "abnormal";
+        }
+
+        if (showHep) {
+            gridHTML += createCard("Metabólico & Hepático", hepStatus, 
                 `AST: ${data.ast||'-'} | ALT: ${data.alt||'-'} | Alb: ${data.alb||'-'}`, 
-                hepNote.join(" ") || "Sin patrón específico detectado.");
+                hepNote.join("<br>") || "Perfil hepático sin alteraciones significativas.");
         }
 
         document.getElementById('outputGrid').innerHTML = gridHTML;
     }
 
-    function createCard(title, status, values, note) {
+    // Helper para crear tarjetas HTML
+    function createCard(title, status, values, text) {
         return `
         <div class="card ${status}">
-            <div class="card-title">${title}</div>
-            <div class="data-row"><span class="value">${values}</span></div>
-            <div class="interpretation ${status}">${note}</div>
+            <div class="card-header">
+                <div class="card-title">${title}</div>
+                <div class="card-status">${status === 'normal' ? 'Normal' : 'Atención'}</div>
+            </div>
+            <div class="data-row">
+                <span class="data-val" style="width:100%">${values}</span>
+            </div>
+            <div class="interpretation ${status}">${text}</div>
         </div>`;
     }
 </script>
