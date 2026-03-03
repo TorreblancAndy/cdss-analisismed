@@ -3,370 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Torreblanca | CDSS Critical Care Suite</title>
+    <title>Dr. Torreblanca | CDSS V5.0 Internal Medicine</title>
     <style>
-        :root { --primary: #0d47a1; --accent: #29b6f6; --bg: #f5f7fa; --card: #ffffff; --warn: #fbc02d; --crit: #d32f2f; --success: #388e3c; --gas: #5e35b1; }
-        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); padding: 0; margin: 0; color: #37474f; line-height: 1.4; font-size: 14px; }
+        :root { --primary: #00251a; --accent: #004d40; --bg: #eceff1; --card: #ffffff; --warn: #ff8f00; --crit: #c62828; --success: #2e7d32; --drug: #4a148c; --cardio: #b71c1c; }
+        body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); padding: 0; margin: 0; color: #37474f; font-size: 14px; line-height: 1.4; }
         
-        .main-container { max-width: 1400px; margin: 0 auto; padding: 15px; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); margin-bottom: 15px; padding-bottom: 10px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        h1 { color: var(--primary); font-size: 1.4rem; margin: 0; }
-        .subtitle { font-size: 0.85rem; color: #78909c; font-weight: 600; }
+        .main-container { max-width: 1450px; margin: 0 auto; padding: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 8px; border-bottom: 4px solid var(--primary); margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h1 { color: var(--primary); margin: 0; font-size: 1.5rem; }
+        .badge { background: var(--primary); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
 
         .layout { display: grid; grid-template-columns: 320px 1fr; gap: 15px; }
-        @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
-
-        /* INPUT PANEL */
-        .controls { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e0e0e0; }
-        .input-group { margin-bottom: 10px; }
-        textarea { width: 100%; height: 350px; padding: 12px; border: 1px solid #cfd8dc; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 13px; resize: vertical; box-sizing: border-box; }
-        textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.1); }
-        button.analyze-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-        button.analyze-btn:hover { background: #1565c0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        /* OUTPUT GRID */
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; align-content: start; }
         
-        .card { background: var(--card); border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-top: 4px solid #cfd8dc; display: flex; flex-direction: column; }
-        .card.abnormal { border-top-color: var(--warn); }
+        /* Input */
+        .controls { background: white; padding: 15px; border-radius: 8px; border: 1px solid #cfd8dc; }
+        textarea { width: 100%; height: 450px; padding: 12px; border: 1px solid #b0bec5; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 12px; resize: vertical; margin-top: 10px; }
+        textarea:focus { border-color: var(--accent); outline: 2px solid rgba(0,77,64,0.1); }
+        button.analyze-btn { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        button.analyze-btn:hover { background: var(--primary); }
+
+        /* Output */
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; align-content: start; }
+        
+        .card { background: white; border-radius: 6px; padding: 15px; border-top: 4px solid #cfd8dc; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card.alert { border-top-color: var(--warn); }
         .card.critical { border-top-color: var(--crit); }
-        .card.normal { border-top-color: var(--success); }
-        .card.gaso { border-top-color: var(--gas); background: #fdfbff; }
+        .card.cardio { border-top-color: var(--cardio); }
+        .card.drug { border-top-color: var(--drug); background: #f3e5f5; }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #f0f0f0; }
-        .card-title { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; color: #546e7a; }
-        .card-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #eceff1; color: #78909c; font-weight: bold; }
-        
-        .data-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 2px 0; border-bottom: 1px dashed #f5f5f5; }
-        .data-val { font-weight: 600; color: #263238; }
-        
-        .interpretation { margin-top: 10px; font-size: 0.85rem; padding: 8px; border-radius: 4px; background: #f5f5f5; border-left: 3px solid #bdbdbd; color: #455a64; line-height: 1.5; }
-        .interpretation.abnormal { background: #fff8e1; color: #e65100; border-left-color: var(--warn); }
-        .interpretation.critical { background: #ffebee; color: #c62828; border-left-color: var(--crit); }
-        
-        /* Modal Disclaimer Legal Mexicano */
-        #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 35px; max-width: 600px; border-radius: 8px; text-align: left; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border-left: 10px solid var(--primary); }
-        .modal-h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .legal-list { font-size: 0.9rem; color: #37474f; line-height: 1.6; padding-left: 20px; }
-        .legal-list li { margin-bottom: 10px; }
+        .card-header { font-weight: 700; color: #546e7a; text-transform: uppercase; font-size: 0.85rem; border-bottom: 1px solid #eceff1; padding-bottom: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .data-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding: 3px 0; font-size: 0.9rem; }
+        .interpretation { margin-top: 10px; padding: 8px; background: #f5f5f5; border-left: 3px solid #ccc; font-size: 0.85rem; color: #455a64; }
+        .interpretation.critical { background: #ffebee; border-left-color: var(--crit); color: #b71c1c; }
+        .interpretation.alert { background: #fff8e1; border-left-color: var(--warn); color: #f57f17; }
+
+        /* Disclaimer Modal */
+        #disclaimerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 40px; max-width: 600px; border-radius: 8px; border-left: 10px solid var(--crit); }
+        .legal-text { font-size: 0.9rem; text-align: justify; color: #37474f; margin: 15px 0; }
     </style>
 </head>
 <body>
 
     <div id="disclaimerModal">
         <div class="modal-content">
-            <h2 class="modal-h2">⚠️ Aviso Legal, Privacidad y Uso Profesional</h2>
-            
-            <p style="font-weight:bold; color:#d32f2f;">
-                HERRAMIENTA DISEÑADA EXCLUSIVAMENTE PARA MÉDICOS INTERNISTAS, RESIDENTES DE MEDICINA INTERNA Y ÁREAS CRÍTICAS.
+            <h2 style="margin-top:0; color:var(--crit)">⚠️ Validación Clínica R4</h2>
+            <p class="legal-text">
+                Herramienta de soporte a la decisión clínica (CDSS) versión 5.0. 
+                Incluye algoritmos de <strong>Nefrofarmacología, Cardiología Avanzada y Hemodinámica</strong>.
             </p>
-
-            <p style="font-size:0.9rem;">
-                Este software es un Sistema de Soporte a la Decisión Clínica (CDSS) auxiliar. Al utilizarlo, usted reconoce y acepta las siguientes condiciones conforme a la normativa mexicana vigente:
-            </p>
-
-            <ul class="legal-list">
-                <li><strong>Protección de Datos (LFPDPPP):</strong> Esta aplicación opera bajo el principio de <em>Disociación de Datos</em>. No solicita, procesa ni almacena identificadores personales (Nombre, CURP, Fecha de Nacimiento). El análisis se realiza sobre variables biológicas anónimas.</li>
-                
-                <li><strong>Arquitectura "Client-Side" (Seguridad):</strong> El procesamiento de datos ocurre exclusivamente en la memoria temporal (RAM) de su dispositivo local. <strong>Ningún dato es transmitido a servidores externos ni almacenado en bases de datos.</strong> Al cerrar esta ventana, la información se elimina permanentemente.</li>
-                
-                <li><strong>Responsabilidad Médica (NOM-004-SSA3-2012):</strong> Esta herramienta NO sustituye el juicio clínico ni constituye parte del Expediente Clínico Oficial. Los resultados gasométricos y scores (qSOFA, APACHE, R Factor) son sugerencias estadísticas que requieren correlación clínica obligatoria por parte del médico tratante.</li>
+            <ul class="legal-text">
+                <li><strong>Privacidad (LFPDPPP):</strong> Ejecución 100% local (Client-Side). No almacena ni transmite datos. Disociación automática de identidad.</li>
+                <li><strong>Responsabilidad:</strong> El médico tratante es el único responsable de validar las dosis sugeridas con las guías institucionales (Sanford/Micromedex).</li>
+                <li><strong>Contexto:</strong> Diseñado para Medicina Interna y Áreas Críticas.</li>
             </ul>
-
-            <button class="analyze-btn" onclick="document.getElementById('disclaimerModal').style.display='none'">
-                ENTIENDO Y ACEPTO BAJO MI RESPONSABILIDAD PROFESIONAL
-            </button>
+            <button class="analyze-btn" onclick="document.getElementById('disclaimerModal').style.display='none'">ACEPTAR Y CONTINUAR</button>
         </div>
     </div>
 
     <div class="main-container">
         <div class="header">
             <div>
-                <h1>CDSS Critical Care Suite</h1>
-                <div class="subtitle">Análisis Fisiopatológico: Hemodinámico, Gasométrico y Metabólico</div>
+                <h1>CDSS Clinical Suite</h1>
+                <span style="font-size:0.9rem; color:#607d8b">Integración: Cardio - Nefro - Hemato - Farmaco</span>
             </div>
-            <div style="text-align:right; font-size:0.8rem; color:#888;">
-                v4.1 | Internal Medicine R4 Edition
-            </div>
+            <span class="badge">V5.0 R4</span>
         </div>
 
         <div class="layout">
             <div class="input-panel">
                 <div class="controls">
-                    <div class="input-group">
-                        <label><strong>FiO2 Actual (%):</strong> <input type="number" id="fio2" value="21" style="width:50px"></label> | 
-                        <label><strong>Patm:</strong> <input type="number" id="patm" value="760" style="width:50px" title="760 mar, 585 CDMX"> mmHg</label>
-                    </div>
-                    <div class="input-group">
-                        <label><input type="radio" name="sex" value="m" checked> H</label>
-                        <label><input type="radio" name="sex" value="f"> M</label> | 
-                        Edad: <input type="number" id="age" value="60" style="width:40px">
-                    </div>
+                    <label><strong>Sexo:</strong> <input type="radio" name="sex" value="m" checked> H <input type="radio" name="sex" value="f"> M</label> | 
+                    <label><strong>Edad:</strong> <input type="number" id="age" value="65" style="width:50px"></label> |
+                    <label><strong>Fumador:</strong> <input type="checkbox" id="smoker"></label>
                 </div>
-                <textarea id="noteInput" placeholder="PEGAR NOTA CLÍNICA O LABORATORIOS (Formato libre).
+                <textarea id="noteInput" placeholder="PEGUE LA NOTA CLÍNICA AQUÍ.
 
-Ejemplo UCI / Urgencias:
-pH 7.28 pCO2 30 pO2 65 HCO3 14 Lac 4.5.
-Na 135 K 5.2 Cl 105 Ca 8.2 Alb 3.0.
-TA 90/50 FR 24 Sat 88% Glasgow 13.
-Hb 9.0 Plaq 80000 Crea 2.1 Bili 2.5.
-AST 150 ALT 180 FA 100."></textarea>
-                <button class="analyze-btn" onclick="runAnalysis()">Ejecutar Análisis Complejo</button>
+Ejemplo Completo:
+Paciente con disnea. Antecedente de IAM.
+Labs: Hb 9.2 VCM 72 Ferritina 15.
+Crea 2.4 Urea 90. Na 135 K 4.8. 
+Examen Orina: uNa 40 uCr 120 uOsm 350.
+Perfil Tiroideo: TSH 8.5 T4L 0.6.
+Cardio: FEVI 35%. TA 100/60.
+Medicamentos: Metformina 850mg, Enoxaparina 60mg, Espironolactona."></textarea>
+                <button class="analyze-btn" onclick="runAnalysis()">EJECUTAR ANÁLISIS INTEGRAL</button>
             </div>
 
             <div class="results-grid" id="outputGrid">
-                <div class="card normal">
-                    <div style="padding:20px; text-align:center; color:#90a4ae">
-                        <strong>Sistema en Espera</strong><br>
-                        Ingrese variables fisiológicas para iniciar cálculo.
-                    </div>
-                </div>
+                <div class="card"><div style="padding:20px; text-align:center; color:#90a4ae">Esperando datos clínicos...</div></div>
             </div>
         </div>
     </div>
 
 <script>
-    // --- 1. RECONOCIMIENTO DE PATRONES (REGEX AVANZADO) ---
-    const PATTERNS = {
-        // Gasometría
-        ph: /pH\s*[:=]?\s*([\d\.]+)/i,
-        pco2: /(?:pCO2|CO2)\s*[:=]?\s*([\d\.]+)/i,
-        po2: /(?:pO2|PaO2)\s*[:=]?\s*([\d\.]+)/i,
-        hco3: /(?:HCO3|Bic|Bicarbonato)\s*[:=]?\s*([\d\.]+)/i,
-        lact: /(?:Lac|Lactato|Lact)\s*[:=]?\s*([\d\.]+)/i,
-        ica: /(?:Ca\+|Cai|Calcio i[oó]nico)\s*[:=]?\s*([\d\.]+)/i,
-        glu_gas: /(?:GluGas|Glucosa\s*Gas)\s*[:=]?\s*([\d\.]+)/i,
-        
-        // Vitales (Para Scores Sepsis/UCI)
-        ta: /(?:TA|PA|Presi[oó]n)\s*[:=]?\s*(\d+)[\/](\d+)/i, // Captura Sist/Diast
-        fr: /(?:FR|Frecuencia R)\s*[:=]?\s*([\d\.]+)/i,
-        fc: /(?:FC|Frecuencia C)\s*[:=]?\s*([\d\.]+)/i,
-        sat: /(?:Sat|SaO2|SpO2)\s*[:=]?\s*([\d\.]+)/i,
-        gcs: /(?:GCS|Glasgow)\s*[:=]?\s*([\d\.]+)/i,
+    // --- BASE DE DATOS NEFROFARMACOLÓGICA (SIMPLIFICADA) ---
+    const DRUG_DB = {
+        'metformina': { cut: 30, msg: "Contraindicada (Riesgo Acidosis Láctica). Suspender." },
+        'glibenclamida': { cut: 60, msg: "Riesgo hipoglucemia severa. Evitar." },
+        'enoxaparina': { cut: 30, msg: "Ajustar dosis al 50% o cambiar a HNF." },
+        'rivaroxaban': { cut: 15, msg: "Contraindicado. (Ajuste 15mg si TFG 15-50)." },
+        'dabigatran': { cut: 30, msg: "Contraindicado." },
+        'espironolactona': { cut: 30, msg: "Contraindicada (Riesgo Hiperkalemia)." },
+        'nitrofurantoina': { cut: 60, msg: "Ineficaz y tóxica (Neuropatía)." },
+        'ains': { cut: 60, msg: "Nefrotóxico directo. Evitar.", pattern: /(?:diclofenaco|ketorolaco|ibuprofeno|naproxeno|indometacina)/i },
+        'ieca_ara': { cut: 0, msg: "Monitorizar K+ y Cr. Suspender si AKI con Cr >30% basal.", pattern: /(?:enala|capto|lisino|losartan|telmi|candesa|valsa)pril|rtan/i },
+        'sglt2': { cut: 20, msg: "Efecto glucosúrico reducido. Evaluar riesgo/beneficio CV.", pattern: /(?:dapa|empa|cana)gliflozina/i }
+    };
 
-        // Hematología & Química
+    // --- PATRONES REGEX ---
+    const PATTERNS = {
+        // Básicos
         hb: /(?:Hb|Hemoglobina)\s*[:=]?\s*([\d\.]+)/i,
-        plaq: /(?:Plaq|Plaquetas)\s*[:=]?\s*([\d\.]+)/i,
+        vcm: /(?:VCM|Volumen)\s*[:=]?\s*([\d\.]+)/i,
         crea: /(?:Cr|Crea|Creatinina)\s*[:=]?\s*([\d\.]+)/i,
-        bun: /(?:BUN)\s*[:=]?\s*([\d\.]+)/i,
-        urea: /(?:Urea)\s*[:=]?\s*([\d\.]+)/i,
-        na: /(?:Na|Sodio)\s*[:=]?\s*([\d\.]+)/i,
-        k: /(?:K|Potasio)\s*[:=]?\s*([\d\.]+)/i,
-        cl: /(?:Cl|Cloro)\s*[:=]?\s*([\d\.]+)/i,
-        alb: /(?:Alb|Albumina)\s*[:=]?\s*([\d\.]+)/i,
+        na: /(?:Na|Sodio|Natrem)\s*[:=]?\s*([\d\.]+)/i,
+        k: /(?:K|Potasio|Kalem)\s*[:=]?\s*([\d\.]+)/i,
         
-        // Hepático (Para R Factor)
-        ast: /(?:AST|TGO)\s*[:=]?\s*([\d\.]+)/i,
-        alt: /(?:ALT|TGP)\s*[:=]?\s*([\d\.]+)/i,
-        alp: /(?:ALP|FA|Fosfatasa|Alc)\s*[:=]?\s*([\d\.]+)/i, 
-        bili: /(?:BT|Bili|Bilirrubina)\s*[:=]?\s*([\d\.]+)/i
+        // Cardio
+        fevi: /(?:FEVI|FE|Fracci[oó]n\s*de\s*eyecci[oó]n)\s*[:=]?\s*([\d\.]+)/i,
+        ta: /(?:TA|PA|Presi[oó]n)\s*[:=]?\s*(\d+)[\/](\d+)/i,
+        
+        // Perfil Hierro / Anemia
+        ferritina: /(?:Ferritina)\s*[:=]?\s*([\d\.]+)/i,
+        ist: /(?:IST|Sat\.?\s*Transf|Saturaci[oó]n)\s*[:=]?\s*([\d\.]+)/i,
+        
+        // Orina / Renal Tubular
+        una: /(?:uNa|Na\s*u|Sodio\s*urinario|Na\s*en\s*orina)\s*[:=]?\s*([\d\.]+)/i,
+        ucr: /(?:uCr|Cr\s*u|Creatinina\s*urinaria)\s*[:=]?\s*([\d\.]+)/i,
+        uosm: /(?:uOsm|Osm\s*u|Osmolaridad\s*u)\s*[:=]?\s*([\d\.]+)/i,
+        posm: /(?:pOsm|Osm\s*p|Osmolaridad\s*p)\s*[:=]?\s*([\d\.]+)/i, // Plasmatica
+        prot_u: /(?:Prot\s*u|Proteinuria)\s*[:=]?\s*([\d\.]+)/i,
+        alb_u: /(?:Alb\s*u|Albuminuria|Microalb)\s*[:=]?\s*([\d\.]+)/i,
+
+        // Endocrino
+        tsh: /(?:TSH)\s*[:=]?\s*([\d\.]+)/i,
+        t4l: /(?:T4L|T4\s*Libre)\s*[:=]?\s*([\d\.]+)/i,
+        pth: /(?:PTH|Paratohormona)\s*[:=]?\s*([\d\.]+)/i
     };
 
     function runAnalysis() {
         const text = document.getElementById('noteInput').value;
-        const fio2Val = parseFloat(document.getElementById('fio2').value) || 21;
-        const patm = parseFloat(document.getElementById('patm').value) || 760;
-        const fio2 = fio2Val / 100;
         const age = parseFloat(document.getElementById('age').value) || 60;
-        
-        let d = {}; 
-        let gridHTML = "";
-        
-        // Extracción
+        const sex = document.querySelector('input[name="sex"]:checked').value;
+        const isMale = sex === 'm';
+        const isSmoker = document.getElementById('smoker').checked;
+
+        let d = {};
         for (const [key, regex] of Object.entries(PATTERNS)) {
             const match = text.match(regex);
             if (match) {
-                if(key === 'ta') { // Caso especial TA (Sist/Diast)
+                if(key === 'ta') {
                     d['tas'] = parseFloat(match[1]);
                     d['tad'] = parseFloat(match[2]);
-                    d['tam'] = (d['tas'] + 2*d['tad']) / 3;
                 } else {
                     d[key] = parseFloat(match[1]);
                 }
-            } else {
-                d[key] = null;
-            }
+            } else { d[key] = null; }
         }
 
-        // --- 1. MÓDULO GASOMETRÍA & VENTILACIÓN ---
-        if (d.ph) {
-            let gasNote = [];
-            let gasStatus = "normal";
-            let disorder = "";
+        let gridHTML = "";
 
-            // Estado Ácido-Base
-            if (d.ph < 7.35) {
-                gasStatus = "critical";
-                if (d.pco2 > 45) disorder = "Acidosis Respiratoria";
-                else if (d.hco3 < 22) {
-                    disorder = "Acidosis Metabólica";
-                    // Winter's Formula
-                    let expectedPco2 = (1.5 * d.hco3) + 8;
-                    if (d.pco2 < (expectedPco2 - 2)) disorder += " + Alc. Resp (Mixta)";
-                    else if (d.pco2 > (expectedPco2 + 2)) disorder += " + Acid. Resp (Mixta)";
-                    else disorder += " (Compensada)";
-                    
-                    // Anion Gap
-                    if (d.na && d.cl) {
-                        let ag = d.na - (d.cl + d.hco3);
-                        gasNote.push(`<b>Anion Gap: ${ag.toFixed(1)}</b> (${ag > 12 ? 'Elevado: MUDPILES' : 'Normal'}).`);
-                        if(ag > 12) {
-                            let delta = (ag - 12) + d.hco3;
-                            if(delta > 30) gasNote.push(`Delta Gap > 30: Alc. Metabólica concomitante.`);
-                        }
+        // --- 1. RENAL & NEFROFARMACOLOGÍA ---
+        let tfg = null;
+        if (d.crea) {
+            // CKD-EPI 2021
+            let k = isMale ? 0.9 : 0.7;
+            let alpha = isMale ? -0.302 : -0.241;
+            let f1 = d.crea / k;
+            tfg = 142 * Math.pow(Math.min(f1, 1), alpha) * Math.pow(Math.max(f1, 1), -1.2) * Math.pow(0.9938, age);
+            if (!isMale) tfg *= 1.012;
+
+            let drugAlerts = [];
+            
+            // Lógica de fármacos
+            for (const [drugName, data] of Object.entries(DRUG_DB)) {
+                let regex = data.pattern || new RegExp(drugName, "i");
+                if (regex.test(text)) {
+                    if (tfg < data.cut) {
+                        drugAlerts.push(`<b>${drugName.toUpperCase()}:</b> TFG < ${data.cut}. ${data.msg}`);
                     }
                 }
-            } else if (d.ph > 7.45) {
-                gasStatus = "abnormal";
-                if (d.pco2 < 35) disorder = "Alcalosis Respiratoria";
-                else if (d.hco3 > 26) disorder = "Alcalosis Metabólica";
+            }
+
+            let renalStatus = tfg < 60 ? "alert" : "normal";
+            let renalMsg = `TFGe: <b>${tfg.toFixed(1)} mL/min</b> (CKD-EPI).`;
+            if (tfg < 60) renalMsg += " <br>Enfermedad Renal Crónica / AKI.";
+            
+            gridHTML += createCard("Función Renal", renalStatus, renalMsg, null);
+
+            if (drugAlerts.length > 0) {
+                gridHTML += createCard("⚠️ Alerta Nefro-Farmacológica", "drug", 
+                    "Ajuste de Medicamentos Requerido", drugAlerts.join("<br>"));
+            }
+        }
+
+        // --- 2. CARDIOLOGÍA AVANZADA ---
+        let cardioNote = [];
+        let cardioStatus = "normal";
+        let hasCardio = false;
+
+        // FEVI & IC
+        if (d.fevi) {
+            hasCardio = true;
+            let hfType = "";
+            if (d.fevi < 40) { hfType = "IC-FEr (Reducida)"; cardioStatus = "critical"; }
+            else if (d.fevi < 50) { hfType = "IC-FElm (Ligeramente Reducida)"; cardioStatus = "alert"; }
+            else { hfType = "IC-FEp (Preservada)"; }
+            
+            cardioNote.push(`<b>Fenotipo: ${hfType} (FEVI ${d.fevi}%)</b>. ACC/AHA Estadificación requerida.`);
+            
+            // MAGGIC Score (Heurística simplificada de sugerencia)
+            if (d.fevi < 50) {
+                let maggicPoints = 0;
+                // Suma simplificada basada en variables disponibles
+                if (d.fevi < 20) maggicPoints += 7; else if (d.fevi < 30) maggicPoints += 5; else if (d.fevi < 40) maggicPoints += 3;
+                if (d.crea && d.crea > 1.5) maggicPoints += 2; // Aprox
+                if (age > 70) maggicPoints += 3;
+                if (d.tas && d.tas < 110) maggicPoints += 2; // Aprox
+                if (isSmoker) maggicPoints += 1;
+                if (!isMale) maggicPoints += 1; // Ajuste
+                // Nota: El MAGGIC real requiere NYHA y beta-bloqueo.
+                cardioNote.push(`MAGGIC Score (Estimado): Riesgo basal detectado. Validar NYHA.`);
+            }
+        }
+
+        // SICA / IAM
+        if (/IAM|Infarto|SICA|Angina/i.test(text)) {
+            hasCardio = true;
+            cardioNote.push(`<b>Evento Isquémico Detectado:</b>`);
+            cardioNote.push(`- <b>TIMI/GRACE:</b> Calcular mandatorio.`);
+            
+            // Killip Kimball Check
+            if (/Killip\s*[I1]/i.test(text)) cardioNote.push("Killip I: Sin falla (Mortalidad <6%).");
+            else if (/Killip\s*[II2]/i.test(text) || (/estertores/i.test(text) && !/edema agudo/i.test(text))) cardioNote.push("Killip II: IC Leve/S3 (Mortalidad ~17%).");
+            else if (/Killip\s*[III3]/i.test(text) || /edema agudo/i.test(text)) { cardioNote.push("Killip III: EAP (Mortalidad ~38%)."); cardioStatus = "critical"; }
+            else if (/Killip\s*[IV4]/i.test(text) || /choque|shock/i.test(text)) { 
+                cardioNote.push("Killip IV: Choque Cardiogénico (Mortalidad ~81%)."); 
+                cardioNote.push("SCAI Stage C/D/E probable. Soporte mecánico?");
+                cardioStatus = "critical"; 
             } else {
-                disorder = "pH en rango (Equilibrio o Mixto compensado)";
+                cardioNote.push("Estadificar Killip-Kimball.");
             }
-            gasNote.push(`<b>${disorder}</b>`);
-
-            // Oxigenación
-            if (d.po2) {
-                let pafi = d.po2 / fio2;
-                let pafiMsg = `PaO2/FiO2: <b>${pafi.toFixed(0)}</b>`;
-                if (pafi < 300) {
-                    gasStatus = "critical";
-                    pafiMsg += " (SDRA " + (pafi < 100 ? "Grave" : pafi < 200 ? "Mod" : "Leve") + ")";
-                }
-                gasNote.push(pafiMsg);
-
-                // AaDO2
-                if (d.pco2) {
-                    let pao2_alveolar = (fio2 * (patm - 47)) - (d.pco2 / 0.8);
-                    let aado2 = pao2_alveolar - d.po2;
-                    let expectedAa = (age / 4) + 4;
-                    
-                    let gradMsg = `AaDO2: ${aado2.toFixed(1)} mmHg (Esp: ~${expectedAa.toFixed(0)})`;
-                    if (aado2 > expectedAa + 10) gradMsg += " -> Alt. Intercambio (Shunt/V-Q).";
-                    gasNote.push(gradMsg);
-                }
-            }
-
-            // Perfusión
-            if (d.lact) {
-                let lacMsg = `Lactato: ${d.lact}`;
-                if (d.lact > 2) { gasStatus = "critical"; lacMsg += " (Hipoperfusión Tisular/Sepsis)"; }
-                gasNote.push(lacMsg);
-            }
-
-            gridHTML += createCard("Gasometría & Ventilación", gasStatus, 
-                `pH: ${d.ph} | pCO2: ${d.pco2} | HCO3: ${d.hco3}`, 
-                gasNote.join("<br>"));
         }
 
-        // --- 2. MÓDULO SCORING (SEPSIS / UCI) ---
-        let scoreNote = [];
-        let scoreStatus = "normal";
-        let hasScores = false;
+        if (hasCardio) {
+            gridHTML += createCard("Cardiología & Hemodinamia", cardioStatus.includes("crit") ? "cardio" : "alert", 
+                d.tas ? `TA: ${d.tas}/${d.tad} | FEVI: ${d.fevi||'-'}%` : "Datos Hemodinámicos", cardioNote.join("<br>"));
+        }
 
-        // qSOFA
-        if (d.fr || d.tas || d.gcs) {
-            let qsofa = 0;
-            let criteria = [];
-            if (d.fr && d.fr >= 22) { qsofa++; criteria.push("Taquipnea"); }
-            if (d.tas && d.tas <= 100) { qsofa++; criteria.push("Hipotensión"); }
-            if (d.gcs && d.gcs < 15) { qsofa++; criteria.push("Alt. Mental"); }
+        // --- 3. TUBULAR RENAL & MEDIO INTERNO ---
+        let urineNote = [];
+        let hasUrine = false;
+
+        // FeNa (Excreción Fraccional de Sodio)
+        // Formula: (uNa * pCr) / (pNa * uCr) * 100
+        if (d.una && d.ucr && d.crea && d.na) {
+            let fena = (d.una * d.crea) / (d.na * d.ucr) * 100;
+            hasUrine = true;
+            let fenaDx = fena < 1 ? "Prerrenal (Avidez de Na)" : "NTA / Renal Intrínseca";
+            urineNote.push(`<b>FeNa: ${fena.toFixed(2)}%</b> -> ${fenaDx}.`);
+        }
+
+        // TTKG (Gradiente Transtubular de K)
+        // Formula: (uK * pOsm) / (pK * uOsm) -> Requiere uK (no en regex arriba, agregamos logica si existe)
+        // Simplificado con Osmolaridad Urinaria
+        if (d.uosm) {
+            hasUrine = true;
+            let osmMsg = `uOsm: ${d.uosm}.`;
+            if (d.uosm < 300) osmMsg += " (Diluida - Falla mecanismo concentración / DI?)";
+            else if (d.uosm > 600) osmMsg += " (Concentrada - Buena función tubular)";
+            urineNote.push(osmMsg);
+        }
+
+        if (d.prot_u || d.alb_u) {
+            hasUrine = true;
+            urineNote.push("Proteinuria detectada. Validar Relación Alb/Cr (uACR).");
+        }
+
+        if (hasUrine) {
+            gridHTML += createCard("Análisis Tubular & Orina", "normal", "Indices Urinarios", urineNote.join("<br>"));
+        }
+
+        // --- 4. ENDOCRINO & ANEMIA (Validación Cruzada) ---
+        let endoNote = [];
+        let hasEndo = false;
+
+        // Tiroides
+        if (d.tsh) {
+            hasEndo = true;
+            if (d.tsh > 4.5) endoNote.push("Hipotiroidismo (Ver T4L). Riesgo: Dislipidemia, Hiponatremia.");
+            else if (d.tsh < 0.4) endoNote.push("Hipertiroidismo. Riesgo: FA, Osteoporosis.");
+        }
+
+        // PTH (Hueso metabólico)
+        if (d.pth) {
+            hasEndo = true;
+            if (d.crea && tfg < 60 && d.pth > 65) endoNote.push("Hiperparatiroidismo Secundario a ERC.");
+            else if (d.pth > 65) endoNote.push("Hiperparatiroidismo (Ddx Primario vs Déficit Vit D).");
+        }
+
+        // Anemia Férrica (Confirmación)
+        if (d.hb && d.hb < 13) {
+            let anemiaMsg = "";
+            if (d.ferritina && d.ferritina < 30) anemiaMsg = "Ferropenia Confirmada (Ferritina <30).";
+            else if (d.ferritina && d.ist && d.ist < 20) anemiaMsg = "Ferropenia Funcional / Bloqueo (Ferritina N/Alta + IST <20%).";
             
-            if (qsofa > 0) {
-                hasScores = true;
-                let qMsg = `<b>qSOFA: ${qsofa} puntos</b> (${criteria.join(", ")}).`;
-                if (qsofa >= 2) { 
-                    scoreStatus = "critical"; 
-                    qMsg += "<br>Alto riesgo de mala evolución. Activar Protocolo Sepsis."; 
-                }
-                scoreNote.push(qMsg);
-            }
+            if (anemiaMsg) { hasEndo = true; endoNote.push(anemiaMsg); }
         }
 
-        // SOFA (Lab Partial)
-        let sofaLab = 0;
-        if (d.po2 && fio2) {
-            let pafi = d.po2/fio2;
-            if (pafi < 400) sofaLab += (pafi < 100 ? 4 : pafi < 200 ? 3 : pafi < 300 ? 2 : 1);
-        }
-        if (d.plaq) {
-            if (d.plaq < 150) sofaLab += (d.plaq < 20 ? 4 : d.plaq < 50 ? 3 : d.plaq < 100 ? 2 : 1);
-        }
-        if (d.bili) {
-            if (d.bili >= 1.2) sofaLab += (d.bili > 12 ? 4 : d.bili > 6 ? 3 : d.bili > 2 ? 2 : 1);
-        }
-        if (d.crea) {
-            if (d.crea >= 1.2) sofaLab += (d.crea > 5 ? 4 : d.crea > 3.5 ? 3 : d.crea > 2 ? 2 : 1);
+        if (hasEndo) {
+            gridHTML += createCard("Endocrino & Metabolismo", "normal", "Perfil Hormonal/Hierro", endoNote.join("<br>"));
         }
 
-        if (sofaLab > 0) {
-            hasScores = true;
-            scoreNote.push(`<b>SOFA (Lab/Resp): ${sofaLab} puntos</b> (Componentes detectados).<br>Evaluar Vasopresores y GCS para score total.`);
-        }
-
-        if (hasScores) {
-            gridHTML += createCard("Scores Pronósticos (Sepsis/UCI)", scoreStatus, 
-                `TAS: ${d.tas||'-'} | FR: ${d.fr||'-'} | GCS: ${d.gcs||'-'}`, 
-                scoreNote.join("<br><hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'>"));
-        }
-
-        // --- 3. HEPATOLOGÍA AVANZADA (R FACTOR) ---
-        if (d.ast || d.alt || d.alp) {
-            let hepNote = [];
-            let hepStatus = "normal";
-            let rFactor = null;
-
-            // R Factor Calc (ACG Guidelines)
-            if (d.alt && d.alp) {
-                let altN = d.alt / 40; // Assuming ULN 40
-                let alpN = d.alp / 120; // Assuming ULN 120
-                if (altN > 1 || alpN > 1) {
-                    rFactor = altN / alpN;
-                    let pattern = "";
-                    if (rFactor > 5) pattern = "Hepatocelular";
-                    else if (rFactor < 2) pattern = "Colestásico";
-                    else pattern = "Mixto";
-                    
-                    hepNote.push(`<b>Factor R: ${rFactor.toFixed(1)} (${pattern})</b>`);
-                    hepStatus = "abnormal";
-                }
-            }
-
-            if (!rFactor && d.ast && d.alt) {
-                let ratio = d.ast / d.alt;
-                if (d.ast > 40 || d.alt > 40) {
-                    hepStatus = "abnormal";
-                    hepNote.push(`Relación AST/ALT: ${ratio.toFixed(1)} (${ratio > 2 ? 'Sugestivo OH' : 'Sugestivo Viral/NAFLD'}).`);
-                }
-            }
-            
-            if (hepNote.length > 0) {
-                gridHTML += createCard("Perfil Hepático Avanzado", hepStatus, 
-                    `ALT: ${d.alt||'-'} | FA: ${d.alp||'-'} | Bili: ${d.bili||'-'}`, 
-                    hepNote.join("<br>"));
-            }
-        }
-
-        // --- 4. RENAL & ELETROLITOS ---
-        if (d.crea) {
-             let tfg = 142 * Math.pow((d.crea/0.9), -1.2) * 0.9938**age; // Simplificado para demo
-             if(d.crea > 1.2) gridHTML += createCard("Renal", "abnormal", `Cr: ${d.crea}`, `Posible LRA/ERC. (Verificar diuresis).`);
-        }
+        // Si no hay nada
+        if (gridHTML === "") gridHTML = '<div class="card"><div style="padding:20px">Ingrese datos para iniciar.</div></div>';
         
-        // --- 5. HEMATOLOGÍA ---
-        if (d.hb) {
-            if(d.hb < 10) gridHTML += createCard("Hematología", "abnormal", `Hb: ${d.hb}`, "Anemia moderada/severa. Evaluar transfusión según escenario clínico.");
-        }
-
-        document.getElementById('outputGrid').innerHTML = gridHTML || '<div class="card normal"><div style="padding:20px">Sin datos reconocibles.</div></div>';
+        document.getElementById('outputGrid').innerHTML = gridHTML;
     }
 
-    function createCard(title, status, val, text) {
-        return `<div class="card ${status} ${title.includes('Gaso')?'gaso':''}">
-            <div class="card-header"><span class="card-title">${title}</span><span class="card-badge">${status}</span></div>
-            <div class="data-row"><span class="data-val" style="width:100%">${val}</span></div>
-            <div class="interpretation ${status}">${text}</div>
+    function createCard(title, type, headerVal, body) {
+        return `<div class="card ${type}">
+            <div class="card-header"><span>${title}</span></div>
+            ${headerVal ? `<div class="data-row" style="font-weight:bold">${headerVal}</div>` : ''}
+            ${body ? `<div class="interpretation ${type}">${body}</div>` : ''}
         </div>`;
     }
 </script>
