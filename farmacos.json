@@ -1,0 +1,31 @@
+[
+  {
+    "nombre": "Metformina",
+    "alias": ["metformina", "glucophage", "dimefor"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 30, "accion": "Contraindicado (Riesgo Acidosis Láctica)", "tipo": "critical" },
+      { "tfg_menor_a": 45, "accion": "Dosis máx 1000mg/día", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "Enoxaparina",
+    "alias": ["enoxaparina", "clexane"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 30, "accion": "Ajustar dosis al 50% (1mg/kg c/24h) o cambiar a HNF", "tipo": "alert" }
+    ]
+  },
+  {
+    "nombre": "Nitrofurantoína",
+    "alias": ["nitrofurantoina", "macrodantina"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 60, "accion": "Ineficaz y riesgo de neuropatía. Evitar.", "tipo": "critical" }
+    ]
+  },
+  {
+    "nombre": "Digoxina",
+    "alias": ["digoxina", "lanoxin"],
+    "ajuste_renal": [
+      { "tfg_menor_a": 50, "accion": "Reducir dosis 50% o monitorizar niveles séricos estrechamente", "tipo": "alert" }
+    ]
+  }
+]
